@@ -1,4 +1,4 @@
-# 🧠 Classificador de Lixo – Rede Neural (TensorFlow + TFLite)
+# 🧠 Rede Neural - Classificador de Lixo
 
 > Este repositório contém os códigos de **treinamento, avaliação e conversão** da rede neural usada no aplicativo **RecycleApp**.
 
