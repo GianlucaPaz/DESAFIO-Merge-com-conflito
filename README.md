@@ -121,29 +121,28 @@ O `resize_images.py` pode ser ajustado para o mesmo tamanho, se necessário.
 O script separa automaticamente treino e validação a partir da pasta `images/train`:
 
 ```text
-
-    IMAGE_SIZE = (256, 256)
+IMAGE_SIZE = (256, 256)
     BATCH_SIZE = 24
     VALIDATION_SPLIT_CF = 0.1  # 10% para validação
     DATA_DIR = "./images/train"
 
-    train_ds = tf.keras.preprocessing.image_dataset_from_directory(
-       DATA_DIR,
-       validation_split=VALIDATION_SPLIT_CF,
-       subset="training",
-       seed=123,
-       image_size=IMAGE_SIZE,
-       batch_size=BATCH_SIZE
-    )
+train_ds = tf.keras.preprocessing.image_dataset_from_directory(
+    DATA_DIR,
+    validation_split=VALIDATION_SPLIT_CF,
+    subset="training",
+    seed=123,
+    image_size=IMAGE_SIZE,
+    batch_size=BATCH_SIZE
+)
 
-    val_ds = tf.keras.preprocessing.image_dataset_from_directory(
-       DATA_DIR,
-       validation_split=VALIDATION_SPLIT_CF,
-       subset="validation",
-       seed=123,
-       image_size=IMAGE_SIZE,
-       batch_size=BATCH_SIZE
-    )
+val_ds = tf.keras.preprocessing.image_dataset_from_directory(
+    DATA_DIR,
+    validation_split=VALIDATION_SPLIT_CF,
+    subset="validation",
+    seed=123,
+    image_size=IMAGE_SIZE,
+    batch_size=BATCH_SIZE
+)
 ```
 
 Depois o pipeline é otimizado com:
@@ -158,15 +157,15 @@ Depois o pipeline é otimizado com:
 Para melhorar a generalização, o modelo aplica várias transformações aleatórias apenas no treino:
 
 ```text
-    data_augmentation = tf.keras.Sequential([
-       layers.RandomFlip("horizontal_and_vertical"),
-       layers.RandomRotation(0.2),
-       layers.RandomTranslation(0.1, 0.1),
-       layers.RandomZoom(0.2),
-       layers.RandomContrast(0.2),
-       layers.RandomBrightness(0.2),
-       layers.GaussianNoise(0.05)
-    ])
+data_augmentation = tf.keras.Sequential([
+    layers.RandomFlip("horizontal_and_vertical"),
+    layers.RandomRotation(0.2),
+    layers.RandomTranslation(0.1, 0.1),
+    layers.RandomZoom(0.2),
+    layers.RandomContrast(0.2),
+    layers.RandomBrightness(0.2),
+    layers.GaussianNoise(0.05)
+])
 ```
 
 #### 🧩 Arquitetura da CNN
@@ -174,34 +173,34 @@ Para melhorar a generalização, o modelo aplica várias transformações aleat�
 A rede é uma CNN customizada, com 5 blocos convolucionais e pooling global:
 
 ```text
-    model = models.Sequential([
-       data_augmentation,
-       layers.Rescaling(1./255, input_shape=(IMAGE_SIZE, 3)),  # Normalização
+model = models.Sequential([
+    data_augmentation,
+    layers.Rescaling(1./255, input_shape=(IMAGE_SIZE, 3)),  # Normalização
 
-       layers.Conv2D(32, (3, 3), activation='relu'),
-       layers.BatchNormalization(),
-       layers.MaxPooling2D(2, 2),
+    layers.Conv2D(32, (3, 3), activation='relu'),
+    layers.BatchNormalization(),
+    layers.MaxPooling2D(2, 2),
 
-       layers.Conv2D(64, (3, 3), activation='relu'),
-       layers.MaxPooling2D(2, 2),
+    layers.Conv2D(64, (3, 3), activation='relu'),
+    layers.MaxPooling2D(2, 2),
 
-       layers.Conv2D(128, (3, 3), activation='relu'),
-       layers.MaxPooling2D(2, 2),
+    layers.Conv2D(128, (3, 3), activation='relu'),
+    layers.MaxPooling2D(2, 2),
 
-       layers.Conv2D(256, (3, 3), activation='relu'),
-       layers.MaxPooling2D(2, 2),
+    layers.Conv2D(256, (3, 3), activation='relu'),
+    layers.MaxPooling2D(2, 2),
 
-       layers.Conv2D(512, (3, 3), activation='relu'),
-       layers.MaxPooling2D(2, 2),
+    layers.Conv2D(512, (3, 3), activation='relu'),
+    layers.MaxPooling2D(2, 2),
 
-       layers.GlobalAveragePooling2D(),
+    layers.GlobalAveragePooling2D(),
 
-       layers.Dense(512, activation='relu',
-                    kernel_regularizer=regularizers.l2(1e-4)),
-       layers.Dropout(0.4),
+    layers.Dense(512, activation='relu',
+                kernel_regularizer=regularizers.l2(1e-4)),
+    layers.Dropout(0.4),
 
-       layers.Dense(len(class_names), activation='softmax')
-    ])
+    layers.Dense(len(class_names), activation='softmax')
+])
 ```
 
 Conceitualmente, a entrada é uma imagem 256×256×3 (RGB normalizada para `[0,1]`).
@@ -211,34 +210,34 @@ Conceitualmente, a entrada é uma imagem 256×256×3 (RGB normalizada para `[0,1
 Em vez da entropia cruzada padrão, o projeto usa Focal Loss, mais robusta em cenários com classes desbalanceadas:
 
 ```text
-    def focal_loss_multiclass(y_true, y_pred, alpha=0.25, gamma=3.0):
-       num_classes = tf.shape(y_pred)[-1]
-       y_true_onehot = tf.one_hot(tf.cast(y_true, tf.int32), depth=num_classes)
+def focal_loss_multiclass(y_true, y_pred, alpha=0.25, gamma=3.0):
+    num_classes = tf.shape(y_pred)[-1]
+    y_true_onehot = tf.one_hot(tf.cast(y_true, tf.int32), depth=num_classes)
 
-       epsilon = tf.keras.backend.epsilon()
-       y_pred = tf.clip_by_value(y_pred, epsilon, 1. - epsilon)
+    epsilon = tf.keras.backend.epsilon()
+    y_pred = tf.clip_by_value(y_pred, epsilon, 1. - epsilon)
 
-       pt = tf.reduce_sum(y_true_onehot * y_pred, axis=-1)
-       modulating_factor = tf.pow(1. - pt, gamma)
-       ce = -tf.math.log(pt)
+    pt = tf.reduce_sum(y_true_onehot * y_pred, axis=-1)
+    modulating_factor = tf.pow(1. - pt, gamma)
+    ce = -tf.math.log(pt)
 
-       if isinstance(alpha, (float, int)):
-           alpha_factor = alpha
-       else:
-           alpha_factor = tf.reduce_sum(y_true_onehot * alpha, axis=-1)
+    if isinstance(alpha, (float, int)):
+        alpha_factor = alpha
+    else:
+        alpha_factor = tf.reduce_sum(y_true_onehot * alpha, axis=-1)
 
-       loss = alpha_factor * modulating_factor * ce
-       return tf.reduce_mean(loss)
+    loss = alpha_factor * modulating_factor * ce
+    return tf.reduce_mean(loss)
 ```
 
 O modelo é compilado com:
 
 ```text
-    model.compile(
-        optimizer=tf.keras.optimizers.Adam(learning_rate=5e-4),
-        loss=focal_loss_multiclass,
-        metrics=['accuracy']
-    )
+model.compile(
+    optimizer=tf.keras.optimizers.Adam(learning_rate=5e-4),
+    loss=focal_loss_multiclass,
+    metrics=['accuracy']
+)
 ```
 
 #### ⏱ Callbacks e treinamento em duas fases
