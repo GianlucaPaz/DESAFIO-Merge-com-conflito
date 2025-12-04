@@ -80,7 +80,7 @@ images/
 
 Cada subpasta representa uma classe e contém apenas imagens daquele tipo.
 
-- 🔧 Padronização opcional do tamanho das imagens
+🔧 Padronização opcional do tamanho das imagens
 
   - O script resize_images.py é um utilitário que:
     - 1. Abre todas as imagens da pasta images/train;
