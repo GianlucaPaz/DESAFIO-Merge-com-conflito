@@ -112,9 +112,9 @@ O resize_images.py pode ser ajustado para o mesmo tamanho, se necessário.
 
 ### 2️⃣ Treinamento da rede neural (trainer_final_version.py)
 
-- 📥 Carregamento do dataset
+#### 📥 Carregamento do dataset
 
-  - O script separa automaticamente treino e validação a partir da pasta images/train:
+O script separa automaticamente treino e validação a partir da pasta images/train:
 
     ```text
 
@@ -149,9 +149,9 @@ Depois o pipeline é otimizado com:
 - map(..., num_parallel_calls=AUTOTUNE) – processamento em múltiplas threads;
 - prefetch(AUTOTUNE) – sobreposição de I/O e computação.
 
-- 🎛 Aumento de dados (data augmentation)
+#### 🎛 Aumento de dados (data augmentation)
 
-  - Para melhorar a generalização, o modelo aplica várias transformações aleatórias apenas no treino:
+Para melhorar a generalização, o modelo aplica várias transformações aleatórias apenas no treino:
 
     ```text
     data_augmentation = tf.keras.Sequential([
@@ -165,11 +165,9 @@ Depois o pipeline é otimizado com:
     ])
     ```
 
----
+#### 🧩 Arquitetura da CNN
 
-- 🧩 Arquitetura da CNN
-
-  - A rede é uma CNN customizada, com 5 blocos convolucionais e pooling global:
+A rede é uma CNN customizada, com 5 blocos convolucionais e pooling global:
 
     ```text
     model = models.Sequential([
@@ -204,9 +202,9 @@ Depois o pipeline é otimizado com:
 
 Conceitualmente, a entrada é uma imagem 256×256×3 (RGB normalizada para [0,1]).
 
-- 🎯 Função de perda: Focal Loss multiclasse
+#### 🎯 Função de perda: Focal Loss multiclasse
 
-  - Em vez da entropia cruzada padrão, o projeto usa Focal Loss, mais robusta em cenários com classes desbalanceadas:
+Em vez da entropia cruzada padrão, o projeto usa Focal Loss, mais robusta em cenários com classes desbalanceadas:
 
     ```text
     def focal_loss_multiclass(y_true, y_pred, alpha=0.25, gamma=3.0):
@@ -239,3 +237,37 @@ O modelo é compilado com:
     )
 
     ```
+
+#### ⏱ Callbacks e treinamento em duas fases
+
+O treinamento é dividido em duas fases, ambas com Early Stopping e ajuste dinâmico da taxa de aprendizado:
+
+- EPOCHS_INITIAL = 70 – treino principal
+- EPOCHS_FINE_TUNE = 35 – ajuste fino com LR reduzida
+
+Callbacks principais:
+
+```text
+reduce_lr = ReduceLROnPlateau(
+    monitor='val_loss',
+    factor=0.5,
+    patience=3,
+    min_lr=1e-6,
+    verbose=1
+)
+
+early_stop_initial = EarlyStopping(
+    monitor='val_loss',
+    patience=10,
+    restore_best_weights=True
+)
+```
+
+Após a primeira fase, o código mantém a learning rate atual, recompila o modelo e executa o segundo treinamento com callbacks mais agressivos.
+
+Ao final:
+
+```text
+model.save('trash_classifier_model_finetuned.keras')
+```
+
