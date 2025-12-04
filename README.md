@@ -49,7 +49,7 @@ TCC/
 ```
 
 Obs.: O dataset não é versionado no GitHub por questões de tamanho/licença.
-O repositório assume que você já tem as pastas images/train e images/test organizadas por classe.
+O repositório assume que você já tem as pastas `images/train` e `images/test` organizadas por classe.
 
 ---
 
@@ -59,12 +59,12 @@ A pipeline da rede neural é dividida em 4 etapas principais:
 1. Preparação do dataset
 2. Treinamento da CNN com focal loss
 3. Avaliação em conjunto de teste
-4. Conversão para TensorFlow Lite (.tflite)
+4. Conversão para TensorFlow Lite (`.tflite`)
 
 
 ### 1️⃣ Preparação do dataset
 
-O TensorFlow usa a função image_dataset_from_directory, que espera a seguinte estrutura de pastas:
+O TensorFlow usa a função `image_dataset_from_directory`, que espera a seguinte estrutura de pastas:
 
 ```text
 images/
@@ -83,12 +83,12 @@ Cada subpasta representa uma classe e contém apenas imagens daquele tipo.
 
 #### 🔧 Padronização opcional do tamanho das imagens
 
-  O script resize_images.py é um utilitário que:
-  1. Abre todas as imagens da pasta images/train;
+  O script `resize_images.py` é um utilitário que:
+  1. Abre todas as imagens da pasta `images/train`;
   2. Corrige rotação com base no EXIF;
   3. Converte para RGB;
-  4. Redimensiona mantendo proporção (thumbnail);
-  5. Faz padding para um tamanho fixo (TARGET_SIZE);
+  4. Redimensiona mantendo proporção (`thumbnail`);
+  5. Faz padding para um tamanho fixo (`TARGET_SIZE`);
   6. Sobrescreve os arquivos originais.
 
 Trecho central:
@@ -105,12 +105,12 @@ img_padded = ImageOps.pad(img, TARGET_SIZE, color="white")
 img_padded.save(filepath, quality=90)
 ```
 
-⚠️ No treinamento atual o modelo usa IMAGE_SIZE = (256, 256).
-O resize_images.py pode ser ajustado para o mesmo tamanho, se necessário.
+⚠️ No treinamento atual o modelo usa `IMAGE_SIZE = (256, 256)`.
+O `resize_images.py` pode ser ajustado para o mesmo tamanho, se necessário.
 
 ---
 
-### 2️⃣ Treinamento da rede neural (trainer_final_version.py)
+### 2️⃣ Treinamento da rede neural (`trainer_final_version.py`)
 
 #### 📥 Carregamento do dataset
 
