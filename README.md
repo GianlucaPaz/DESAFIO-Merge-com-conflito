@@ -4,6 +4,9 @@
 
 > O objetivo do modelo é **classificar imagens de lixo** em múltiplas categorias (ex.: garrafa de vidro, copo plástico, papel amassado, etc.), gerando um **arquivo `.tflite` otimizado para rodar localmente no Android**, sem necessidade de internet.
 
+> O código-fonte do aplicativo Android que consome este modelo está disponível em:  
+> 👉 [Repositório do RecycleApp](https://github.com/J4g3rWulf/automatic-happiness)
+
 ---
 
 ## ⚙️ Tecnologias utilizadas
@@ -403,7 +406,12 @@ Este é o arquivo que será usado pelo aplicativo Android (RecycleApp) via `Inte
 
 ---
 
-## 🔗 Integração com o RecycleApp
+## 📎 Projeto relacionado:
+
+**Aplicativo Android (RecycleApp – classificação de lixo com IA)**  
+  👉 [Repositório do RecycleApp](https://github.com/J4g3rWulf/automatic-happiness)
+
+### 🔗 Integração com o RecycleApp
 
 - O arquivo `trash_classifier_model_optimized.tflite` é copiado para a pasta `assets/` do app Android.
 - No app, uma classe utilitária (`TrashClassifier.kt`) faz:
