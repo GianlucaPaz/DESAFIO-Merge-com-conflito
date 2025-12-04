@@ -120,7 +120,7 @@ O `resize_images.py` pode ser ajustado para o mesmo tamanho, se necessário.
 
 O script separa automaticamente treino e validação a partir da pasta `images/train`:
 
-    ```text
+```text
 
     IMAGE_SIZE = (256, 256)
     BATCH_SIZE = 24
@@ -144,7 +144,7 @@ O script separa automaticamente treino e validação a partir da pasta `images/t
        image_size=IMAGE_SIZE,
        batch_size=BATCH_SIZE
     )
-    ```
+```
 
 Depois o pipeline é otimizado com:
 
@@ -157,7 +157,7 @@ Depois o pipeline é otimizado com:
 
 Para melhorar a generalização, o modelo aplica várias transformações aleatórias apenas no treino:
 
-    ```text
+```text
     data_augmentation = tf.keras.Sequential([
        layers.RandomFlip("horizontal_and_vertical"),
        layers.RandomRotation(0.2),
@@ -167,13 +167,13 @@ Para melhorar a generalização, o modelo aplica várias transformações aleat�
        layers.RandomBrightness(0.2),
        layers.GaussianNoise(0.05)
     ])
-    ```
+```
 
 #### 🧩 Arquitetura da CNN
 
 A rede é uma CNN customizada, com 5 blocos convolucionais e pooling global:
 
-    ```text
+```text
     model = models.Sequential([
        data_augmentation,
        layers.Rescaling(1./255, input_shape=(IMAGE_SIZE, 3)),  # Normalização
@@ -202,7 +202,7 @@ A rede é uma CNN customizada, com 5 blocos convolucionais e pooling global:
 
        layers.Dense(len(class_names), activation='softmax')
     ])
-    ```
+```
 
 Conceitualmente, a entrada é uma imagem 256×256×3 (RGB normalizada para `[0,1]`).
 
@@ -210,7 +210,7 @@ Conceitualmente, a entrada é uma imagem 256×256×3 (RGB normalizada para `[0,1
 
 Em vez da entropia cruzada padrão, o projeto usa Focal Loss, mais robusta em cenários com classes desbalanceadas:
 
-    ```text
+```text
     def focal_loss_multiclass(y_true, y_pred, alpha=0.25, gamma=3.0):
        num_classes = tf.shape(y_pred)[-1]
        y_true_onehot = tf.one_hot(tf.cast(y_true, tf.int32), depth=num_classes)
@@ -229,18 +229,17 @@ Em vez da entropia cruzada padrão, o projeto usa Focal Loss, mais robusta em ce
 
        loss = alpha_factor * modulating_factor * ce
        return tf.reduce_mean(loss)
-    ```
+```
 
 O modelo é compilado com:
 
-    ```text
+```text
     model.compile(
         optimizer=tf.keras.optimizers.Adam(learning_rate=5e-4),
         loss=focal_loss_multiclass,
         metrics=['accuracy']
     )
-
-    ```
+```
 
 #### ⏱ Callbacks e treinamento em duas fases
 
