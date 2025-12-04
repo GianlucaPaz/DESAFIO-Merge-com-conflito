@@ -271,3 +271,154 @@ Ao final:
 model.save('trash_classifier_model_finetuned.keras')
 ```
 
+### 3️⃣ Avaliação do modelo (evaluate.py)
+
+O script evaluate.py carrega:
+
+- O modelo salvo (trash_classifier_model_finetuned.keras);
+- O conjunto de teste em ./images/test/.
+
+```text
+IMAGE_SIZE = (256, 256)
+BATCH_SIZE = 24
+TEST_DIR = './images/test/'
+
+model = tf.keras.models.load_model('trash_classifier_model_finetuned.keras', compile=False)
+
+test_ds = tf.keras.preprocessing.image_dataset_from_directory(
+    TEST_DIR,
+    image_size=IMAGE_SIZE,
+    batch_size=BATCH_SIZE,
+    shuffle=False
+)
+class_names = test_ds.class_names
+```
+
+Ele calcula:
+
+- Acurácia e log loss por classe
+- Acurácia, precisão, recall e F1-score globais
+- Matriz de confusão (visualizada via Seaborn)
+
+Trecho principal:
+
+```text
+overall_acc = accuracy_score(y_true, y_pred)
+overall_prec = precision_score(y_true, y_pred, average='weighted', zero_division=0)
+overall_rec = recall_score(y_true, y_pred, average='weighted', zero_division=0)
+overall_f1 = f1_score(y_true, y_pred, average='weighted', zero_division=0)
+
+cm = confusion_matrix(y_true, y_pred, labels=range(len(class_names)))
+sns.heatmap(cm, annot=True, fmt='d', cmap='Blues',
+            xticklabels=class_names, yticklabels=class_names)
+```
+
+### 4️⃣ Conversão para TensorFlow Lite (tflite_converter.py)
+
+Por fim, o modelo é convertido para um `.tflite` otimizado, que é o formato usado no app Android:
+
+```text
+import tensorflow as tf
+
+model = tf.keras.models.load_model('trash_classifier_model_finetuned.keras')
+
+converter = tf.lite.TFLiteConverter.from_keras_model(model)
+converter.optimizations = [tf.lite.Optimize.DEFAULT]
+
+tflite_model = converter.convert()
+
+with open('trash_classifier_model_optimized.tflite', 'wb') as f:
+    f.write(tflite_model)
+```
+
+tf.lite.Optimize.DEFAULT ativa otimizações padrão do TensorFlow Lite (como quantização de pesos), reduzindo o tamanho do modelo e ajudando no desempenho em dispositivos móveis.
+
+---
+
+## ▶️ Como reproduzir o experimento localmente
+
+### 1. Criar e ativar ambiente virtual (opcional, mas recomendado)
+
+```text
+python -m venv venv
+# Windows
+venv\Scripts\activate
+# Linux / macOS
+source venv/bin/activate
+```
+
+### 2. Instalar dependências
+
+```text
+pip install tensorflow numpy matplotlib seaborn scikit-learn pillow
+```
+
+(ou via requirements.txt, se criado)
+
+### 3. Organizar o dataset
+
+- Colocar as imagens em `images/train/<nome_da_classe>/...`
+- Colocar o conjunto de teste em `images/test/<nome_da_classe>/...`
+- Os nomes das pastas de `train/` e `test/` devem ser idênticos.
+
+### 4. (Opcional) Padronizar tamanho das imagens
+
+```text
+python resize_images.py
+```
+
+### 5. Treinar o modelo
+
+```text
+python trainer_final_version.py
+```
+
+Ao final, será gerado o arquivo:
+
+```text
+trash_classifier_model_finetuned.keras
+```
+
+### 6. Avaliar em conjunto de teste
+
+```text
+python evaluate.py
+```
+
+O script imprime métricas no console e abre a matriz de confusão em uma janela gráfica.
+
+### 7. Gerar modelo TFLite
+
+```text
+python tflite_converter.py
+```
+
+Saída esperada:
+
+```text
+trash_classifier_model_optimized.tflite
+```
+
+Este é o arquivo que será usado pelo aplicativo Android (RecycleApp) via Interpreter do TensorFlow Lite.
+
+---
+
+## 🔗 Integração com o RecycleApp
+
+- O arquivo trash_classifier_model_optimized.tflite é copiado para a pasta assets/ do app Android.
+- No app, uma classe utilitária (TrashClassifier.kt) faz:
+1. Carregamento da imagem a partir de uma URI;
+2. Redimensionamento para 256×256;
+3. Conversão para ByteBuffer float32;
+4. Execução do modelo TFLite;
+5. Mapeamento do índice de classe para o material exibido na interface (Vidro, Papel, Plástico, Metal ou Indefinido).
+
+---
+
+## 👥 Equipe
+
+Projeto de rede neural desenvolvido como parte do TCC do curso de Ciência da Computação – Universidade Veiga de Almeida, integrado ao aplicativo móvel RecycleApp.
+
+- Responsáveis pelo desenvolvimento do modelo de IA
+  - Davi Millan Alves
+  - Gabriel Mesquita Gusmão
