@@ -4,7 +4,7 @@
 
 > O objetivo do modelo é **classificar imagens de lixo** em múltiplas categorias (ex.: garrafa de vidro, copo plástico, papel amassado, etc.), gerando um **arquivo `.tflite` otimizado para rodar localmente no Android**, sem necessidade de internet.
 
-> O código-fonte do aplicativo Android que consome este modelo está disponível em:  
+> O código-fonte do aplicativo Android que integra este modelo está disponível em:  
 > 👉 [Repositório do RecycleApp](https://github.com/J4g3rWulf/automatic-happiness)
 
 ---
