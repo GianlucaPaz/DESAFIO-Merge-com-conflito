@@ -56,10 +56,10 @@ O repositório assume que você já tem as pastas images/train e images/test org
 ## 🧪 Pipeline do modelo
 
 A pipeline da rede neural é dividida em 4 etapas principais:
-- 1 - Preparação do dataset
-- 2 - Treinamento da CNN com focal loss
-- 3 - Avaliação em conjunto de teste
-- 4 - Conversão para TensorFlow Lite (.tflite)
+- 1) Preparação do dataset
+- 2) Treinamento da CNN com focal loss
+- 3) Avaliação em conjunto de teste
+- 4) Conversão para TensorFlow Lite (.tflite)
 
 ###1️⃣ Preparação do dataset
 
