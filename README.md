@@ -8,7 +8,7 @@
 
 ## ⚙️ Tecnologias utilizadas
 
-- **Linguagem:** Python (3.x)
+- **Linguagem:** Python
 - **Deep Learning:** TensorFlow 2 / Keras
 - **Pré-processamento de imagens:** Pillow (PIL)
 - **Métricas e avaliação:** scikit-learn
@@ -114,7 +114,7 @@ O `resize_images.py` pode ser ajustado para o mesmo tamanho, se necessário.
 
 #### 📥 Carregamento do dataset
 
-O script separa automaticamente treino e validação a partir da pasta images/train:
+O script separa automaticamente treino e validação a partir da pasta `images/train`:
 
     ```text
 
@@ -144,10 +144,10 @@ O script separa automaticamente treino e validação a partir da pasta images/tr
 
 Depois o pipeline é otimizado com:
 
-- cache() – cache em memória;
-- shuffle() – embaralhamento do treino;
-- map(..., num_parallel_calls=AUTOTUNE) – processamento em múltiplas threads;
-- prefetch(AUTOTUNE) – sobreposição de I/O e computação.
+- `cache()` – cache em memória;
+- `shuffle()` – embaralhamento do treino;
+- `map(..., num_parallel_calls=AUTOTUNE)` – processamento em múltiplas threads;
+- `prefetch(AUTOTUNE)` – sobreposição de I/O e computação.
 
 #### 🎛 Aumento de dados (data augmentation)
 
@@ -200,7 +200,7 @@ A rede é uma CNN customizada, com 5 blocos convolucionais e pooling global:
     ])
     ```
 
-Conceitualmente, a entrada é uma imagem 256×256×3 (RGB normalizada para [0,1]).
+Conceitualmente, a entrada é uma imagem 256×256×3 (RGB normalizada para `[0,1]`).
 
 #### 🎯 Função de perda: Focal Loss multiclasse
 
@@ -242,8 +242,8 @@ O modelo é compilado com:
 
 O treinamento é dividido em duas fases, ambas com Early Stopping e ajuste dinâmico da taxa de aprendizado:
 
-- EPOCHS_INITIAL = 70 – treino principal
-- EPOCHS_FINE_TUNE = 35 – ajuste fino com LR reduzida
+- `EPOCHS_INITIAL = 70` – treino principal
+- `EPOCHS_FINE_TUNE = 35` – ajuste fino com LR reduzida
 
 Callbacks principais:
 
@@ -271,12 +271,12 @@ Ao final:
 model.save('trash_classifier_model_finetuned.keras')
 ```
 
-### 3️⃣ Avaliação do modelo (evaluate.py)
+### 3️⃣ Avaliação do modelo (`evaluate.py`)
 
-O script evaluate.py carrega:
+O script `evaluate.py` carrega:
 
-- O modelo salvo (trash_classifier_model_finetuned.keras);
-- O conjunto de teste em ./images/test/.
+- O modelo salvo (`trash_classifier_model_finetuned.keras`);
+- O conjunto de teste em `./images/test/`.
 
 ```text
 IMAGE_SIZE = (256, 256)
@@ -313,7 +313,7 @@ sns.heatmap(cm, annot=True, fmt='d', cmap='Blues',
             xticklabels=class_names, yticklabels=class_names)
 ```
 
-### 4️⃣ Conversão para TensorFlow Lite (tflite_converter.py)
+### 4️⃣ Conversão para TensorFlow Lite (`tflite_converter.py`)
 
 Por fim, o modelo é convertido para um `.tflite` otimizado, que é o formato usado no app Android:
 
@@ -331,7 +331,7 @@ with open('trash_classifier_model_optimized.tflite', 'wb') as f:
     f.write(tflite_model)
 ```
 
-tf.lite.Optimize.DEFAULT ativa otimizações padrão do TensorFlow Lite (como quantização de pesos), reduzindo o tamanho do modelo e ajudando no desempenho em dispositivos móveis.
+`tf.lite.Optimize.DEFAULT` ativa otimizações padrão do TensorFlow Lite (como quantização de pesos), reduzindo o tamanho do modelo e ajudando no desempenho em dispositivos móveis.
 
 ---
 
@@ -353,7 +353,7 @@ source venv/bin/activate
 pip install tensorflow numpy matplotlib seaborn scikit-learn pillow
 ```
 
-(ou via requirements.txt, se criado)
+(ou via `requirements.txt`, se criado)
 
 ### 3. Organizar o dataset
 
@@ -399,17 +399,17 @@ Saída esperada:
 trash_classifier_model_optimized.tflite
 ```
 
-Este é o arquivo que será usado pelo aplicativo Android (RecycleApp) via Interpreter do TensorFlow Lite.
+Este é o arquivo que será usado pelo aplicativo Android (RecycleApp) via `Interpreter` do TensorFlow Lite.
 
 ---
 
 ## 🔗 Integração com o RecycleApp
 
-- O arquivo trash_classifier_model_optimized.tflite é copiado para a pasta assets/ do app Android.
-- No app, uma classe utilitária (TrashClassifier.kt) faz:
+- O arquivo `trash_classifier_model_optimized.tflite` é copiado para a pasta `assets/` do app Android.
+- No app, uma classe utilitária (`TrashClassifier.kt`) faz:
 1. Carregamento da imagem a partir de uma URI;
 2. Redimensionamento para 256×256;
-3. Conversão para ByteBuffer float32;
+3. Conversão para `ByteBuffer` float32;
 4. Execução do modelo TFLite;
 5. Mapeamento do índice de classe para o material exibido na interface (Vidro, Papel, Plástico, Metal ou Indefinido).
 
