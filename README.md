@@ -110,7 +110,7 @@ O resize_images.py pode ser ajustado para o mesmo tamanho, se necessário.
 
 ---
 
-###2️⃣ Treinamento da rede neural (trainer_final_version.py)
+### 2️⃣ Treinamento da rede neural (trainer_final_version.py)
 
 - 📥 Carregamento do dataset
 
