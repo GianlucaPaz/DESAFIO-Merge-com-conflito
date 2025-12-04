@@ -1,6 +1,8 @@
 # 🧠 Classificador de Lixo – Rede Neural (TensorFlow + TFLite)
 
-> Este repositório contém os códigos de **treinamento, avaliação e conversão** da rede neural usada no aplicativo **RecycleApp**. O objetivo do modelo é **classificar imagens de lixo** em múltiplas categorias (ex.: garrafa de vidro, copo plástico, papel amassado, etc.), gerando um **arquivo `.tflite` otimizado para rodar localmente no Android**, sem necessidade de internet.
+> Este repositório contém os códigos de **treinamento, avaliação e conversão** da rede neural usada no aplicativo **RecycleApp**.
+
+> O objetivo do modelo é **classificar imagens de lixo** em múltiplas categorias (ex.: garrafa de vidro, copo plástico, papel amassado, etc.), gerando um **arquivo `.tflite` otimizado para rodar localmente no Android**, sem necessidade de internet.
 
 ---
 
