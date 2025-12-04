@@ -61,7 +61,8 @@ A pipeline da rede neural é dividida em 4 etapas principais:
 3. Avaliação em conjunto de teste
 4. Conversão para TensorFlow Lite (.tflite)
 
-###1️⃣ Preparação do dataset
+
+##1️⃣ Preparação do dataset
 
 O TensorFlow usa a função image_dataset_from_directory, que espera a seguinte estrutura de pastas:
 
