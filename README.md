@@ -83,12 +83,12 @@ Cada subpasta representa uma classe e contém apenas imagens daquele tipo.
 🔧 Padronização opcional do tamanho das imagens
 
 O script resize_images.py é um utilitário que:
-    - 1. Abre todas as imagens da pasta images/train;
-    - 2. Corrige rotação com base no EXIF;
-    - 3. Converte para RGB;
-    - 4. Redimensiona mantendo proporção (thumbnail);
-    - 5. Faz padding para um tamanho fixo (TARGET_SIZE);
-    - 6. Sobrescreve os arquivos originais.
+1. Abre todas as imagens da pasta images/train;
+2. Corrige rotação com base no EXIF;
+3. Converte para RGB;
+4. Redimensiona mantendo proporção (thumbnail);
+5. Faz padding para um tamanho fixo (TARGET_SIZE);
+6. Sobrescreve os arquivos originais.
 
 Trecho central:
 
