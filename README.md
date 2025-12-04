@@ -428,5 +428,5 @@ Este é o arquivo que será usado pelo aplicativo Android (RecycleApp) via `Inte
 Projeto de rede neural desenvolvido como parte do TCC do curso de Ciência da Computação – Universidade Veiga de Almeida, integrado ao aplicativo móvel RecycleApp.
 
 - Responsáveis pelo desenvolvimento do modelo de IA
-  - Davi Millan Alves
-  - Gabriel Mesquita Gusmão
+  - 🧑‍💻 Davi Millan Alves
+  - 🧑‍💻 Gabriel Mesquita Gusmão
